@@ -420,7 +420,7 @@ namespace BloodSample.Core
                 sample.name = $"BloodSample_{i + 1}";
                 
                 // Randomize sample properties
-                BloodSample bs = sample.GetComponent<BloodSample>();
+                BloodSample.Systems.BloodSample bs = sample.GetComponent<BloodSample.Systems.BloodSample>();
                 if (bs != null)
                 {
                     var types = System.Enum.GetValues(typeof(SampleType));
