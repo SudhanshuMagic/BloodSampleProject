@@ -1,6 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 using BloodSample.Core;
 
 namespace BloodSample.UI
@@ -13,16 +11,16 @@ namespace BloodSample.UI
         [SerializeField] private GameObject _pausePanel;
         
         [Header("Laboratory UI")]
-        [SerializeField] private TextMeshProUGUI _interactionPromptText;
-        [SerializeField] private TextMeshProUGUI _selectedObjectText;
-        [SerializeField] private Button _pauseButton;
+        [SerializeField] private GameObject _interactionPromptPanel;
+        [SerializeField] private GameObject _selectedObjectPanel;
         
         [Header("Sample Info Panel")]
         [SerializeField] private GameObject _sampleInfoPanel;
-        [SerializeField] private TextMeshProUGUI _sampleIdText;
-        [SerializeField] private TextMeshProUGUI _sampleTypeText;
-        [SerializeField] private TextMeshProUGUI _sampleVolumeText;
-        [SerializeField] private TextMeshProUGUI _sampleQualityText;
+        
+        // Runtime text display (console-based for zero-setup)
+        private string _currentInteractionPrompt = "";
+        private string _currentSelectedObject = "";
+        private string _currentSampleInfo = "";
         
         private InputManager _inputManager;
         private GameManager _gameManager;
@@ -49,10 +47,7 @@ namespace BloodSample.UI
                 _gameManager.OnGameStateChanged.AddListener(OnGameStateChanged);
             }
             
-            if (_pauseButton != null)
-            {
-                _pauseButton.onClick.AddListener(TogglePause);
-            }
+            // Note: Button functionality handled by input system for zero-setup
         }
         
         private void InitializeUI()
@@ -115,40 +110,103 @@ namespace BloodSample.UI
         
         public void ShowInteractionPrompt(string prompt)
         {
-            if (_interactionPromptText != null)
+            _currentInteractionPrompt = prompt;
+            if (!string.IsNullOrEmpty(prompt))
             {
-                _interactionPromptText.text = prompt;
-                _interactionPromptText.gameObject.SetActive(!string.IsNullOrEmpty(prompt));
+                Debug.Log($"[UI] 💡 {prompt}");
+            }
+            
+            // Show/hide panel if available
+            if (_interactionPromptPanel != null)
+            {
+                _interactionPromptPanel.SetActive(!string.IsNullOrEmpty(prompt));
             }
         }
         
         public void ShowSelectedObject(string objectName)
         {
-            if (_selectedObjectText != null)
+            _currentSelectedObject = objectName;
+            if (!string.IsNullOrEmpty(objectName))
             {
-                _selectedObjectText.text = string.IsNullOrEmpty(objectName) ? "" : $"Selected: {objectName}";
+                Debug.Log($"[UI] 🎯 Selected: {objectName}");
+            }
+            
+            // Show/hide panel if available
+            if (_selectedObjectPanel != null)
+            {
+                _selectedObjectPanel.SetActive(!string.IsNullOrEmpty(objectName));
             }
         }
         
         public void ShowSampleInfo(BloodSample.Systems.BloodSample sample)
         {
-            if (_sampleInfoPanel == null || sample == null) return;
-            
-            _sampleInfoPanel.SetActive(true);
+            if (sample == null) return;
             
             var data = sample.Data;
-            if (_sampleIdText != null) _sampleIdText.text = $"ID: {data.sampleId}";
-            if (_sampleTypeText != null) _sampleTypeText.text = $"Type: {data.sampleType}";
-            if (_sampleVolumeText != null) _sampleVolumeText.text = $"Volume: {data.volume:F1}mL";
-            if (_sampleQualityText != null) _sampleQualityText.text = $"Quality: {data.qualityScore:F0}%";
+            _currentSampleInfo = $"ID: {data.sampleId} | Type: {data.sampleType} | Volume: {data.volume:F1}mL | Quality: {data.qualityScore:F0}%";
+            
+            Debug.Log($"[UI] 🩸 Sample Info: {_currentSampleInfo}");
+            
+            if (_sampleInfoPanel != null)
+            {
+                _sampleInfoPanel.SetActive(true);
+            }
         }
         
         public void HideSampleInfo()
         {
+            _currentSampleInfo = "";
             if (_sampleInfoPanel != null)
             {
                 _sampleInfoPanel.SetActive(false);
             }
+        }
+        
+        // Simple on-screen UI display using OnGUI (no packages required)
+        private void OnGUI()
+        {
+            // Create a simple UI overlay
+            GUILayout.BeginArea(new Rect(10, 10, 400, 150));
+            
+            // Show interaction prompt
+            if (!string.IsNullOrEmpty(_currentInteractionPrompt))
+            {
+                GUI.backgroundColor = new Color(0.2f, 0.6f, 1f, 0.8f);
+                GUILayout.Box(_currentInteractionPrompt, GUILayout.Height(30));
+                GUI.backgroundColor = Color.white;
+            }
+            
+            // Show selected object
+            if (!string.IsNullOrEmpty(_currentSelectedObject))
+            {
+                GUI.backgroundColor = new Color(0.2f, 0.8f, 0.2f, 0.8f);
+                GUILayout.Box(_currentSelectedObject, GUILayout.Height(25));
+                GUI.backgroundColor = Color.white;
+            }
+            
+            // Show sample info
+            if (!string.IsNullOrEmpty(_currentSampleInfo))
+            {
+                GUI.backgroundColor = new Color(0.8f, 0.2f, 0.2f, 0.8f);
+                GUILayout.Box(_currentSampleInfo, GUILayout.Height(25));
+                GUI.backgroundColor = Color.white;
+            }
+            
+            GUILayout.EndArea();
+            
+            // Show controls help in bottom right
+            GUILayout.BeginArea(new Rect(Screen.width - 250, Screen.height - 120, 240, 110));
+            GUI.backgroundColor = new Color(0f, 0f, 0f, 0.7f);
+            GUILayout.BeginVertical("box");
+            GUILayout.Label("Controls:", GUI.skin.GetStyle("label"));
+            GUILayout.Label("WASD - Move Camera");
+            GUILayout.Label("Mouse + RMB - Look Around");
+            GUILayout.Label("LMB - Select Objects");
+            GUILayout.Label("E - Interact");
+            GUILayout.Label("F1 - Debug Panel");
+            GUILayout.EndVertical();
+            GUILayout.EndArea();
+            GUI.backgroundColor = Color.white;
         }
         
         private void ShowPanel(GameObject panel)

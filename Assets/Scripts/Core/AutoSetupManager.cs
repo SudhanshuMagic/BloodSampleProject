@@ -449,17 +449,8 @@ namespace BloodSample.Core
                 _generatedObjects.Add(uiObj);
             }
             
-            // Create basic canvas if none exists
-            Canvas canvas = FindFirstObjectByType<Canvas>();
-            if (canvas == null)
-            {
-                GameObject canvasObj = new GameObject("Canvas");
-                canvas = canvasObj.AddComponent<Canvas>();
-                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-                canvasObj.AddComponent<UnityEngine.UI.CanvasScaler>();
-                canvasObj.AddComponent<UnityEngine.UI.GraphicRaycaster>();
-                _generatedObjects.Add(canvasObj);
-            }
+            // Note: Using OnGUI for zero-setup UI - no Canvas needed
+            Debug.Log("UI setup complete - using OnGUI for zero-setup compatibility");
             
             yield return new WaitForSeconds(_setupDelay);
         }
