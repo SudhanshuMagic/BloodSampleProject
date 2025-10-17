@@ -1,6 +1,6 @@
-# 🚀 Quick Start Guide - One-Click Laboratory Setup
+# 🚀 Quick Start Guide - Zero-Click Laboratory Setup
 
-## **INSTANT SETUP - Just Press Play!**
+## **FULLY AUTOMATIC - Just Press Play!**
 
 ### **Step 1: Create Unity Project** (2 minutes)
 1. Open Unity Hub
@@ -13,13 +13,10 @@
 1. Copy ALL `.cs` files from `Assets/Scripts/` into Unity's Assets folder
 2. Wait for Unity to compile (spinner in bottom-right corner stops)
 
-### **Step 3: One-Click Setup** (30 seconds)
-1. In Unity, create an empty GameObject (Right-click Hierarchy → Create Empty)
-2. Name it "AutoSetup"
-3. Add the `AutoSetupManager` script to it
-4. **Press Play** ▶️
+### **Step 3: Press Play** ▶️
+**That's it! NO manual setup required!**
 
-**That's it! Everything else is automatic!**
+The system automatically detects when you press Play and creates everything for you!
 
 ---
 
