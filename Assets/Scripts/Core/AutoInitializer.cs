@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using BloodSample.Systems;
 
 namespace BloodSample.Core
 {
@@ -35,7 +36,7 @@ namespace BloodSample.Core
             Debug.Log($"🎬 [AutoInitializer] Scene '{scene.name}' loaded - checking for auto-setup...");
             
             // Check if we already have a setup manager
-            AutoSetupManager existingSetup = Object.FindObjectOfType<AutoSetupManager>();
+            AutoSetupManager existingSetup = Object.FindFirstObjectByType<AutoSetupManager>();
             if (existingSetup != null)
             {
                 Debug.Log("✅ [AutoInitializer] AutoSetupManager already exists - skipping creation");
@@ -56,9 +57,9 @@ namespace BloodSample.Core
         private static bool HasExistingLaboratorySetup()
         {
             // Check for existing core managers or laboratory elements
-            return Object.FindObjectOfType<GameManager>() != null ||
-                   Object.FindObjectOfType<LaboratorySetup>() != null ||
-                   Object.FindObjectsOfType<BloodSample.Systems.BloodSample>().Length > 0;
+            return Object.FindFirstObjectByType<GameManager>() != null ||
+                   Object.FindFirstObjectByType<LaboratorySetup>() != null ||
+                   Object.FindObjectsByType<BloodSample.Systems.BloodSample>(FindObjectsSortMode.None).Length > 0;
         }
         
         private static void CreateAutoSetupManager()
@@ -109,7 +110,7 @@ namespace BloodSample.Core
         {
             yield return null; // Wait one frame
             
-            AutoSetupManager setupManager = Object.FindObjectOfType<AutoSetupManager>();
+            AutoSetupManager setupManager = Object.FindFirstObjectByType<AutoSetupManager>();
             if (setupManager == null && !HasExistingLaboratorySetup())
             {
                 Debug.LogWarning("⚠️ [AutoInitializer] Setup manager not found - creating fallback setup...");
@@ -147,9 +148,9 @@ namespace BloodSample.Core
             }
         }
         
-        public static Coroutine StartCoroutine(System.Collections.IEnumerator routine)
+        public static new Coroutine StartCoroutine(System.Collections.IEnumerator routine)
         {
-            return Instance.StartCoroutine(routine);
+            return ((MonoBehaviour)Instance).StartCoroutine(routine);
         }
     }
 }

@@ -34,7 +34,7 @@ namespace BloodSample.Core
             Application.targetFrameRate = 60;
             
             // Initialize other managers
-            FindObjectOfType<InputManager>()?.Initialize();
+            FindFirstObjectByType<InputManager>()?.Initialize();
             
             ChangeGameState(GameState.Laboratory);
         }

@@ -26,7 +26,7 @@ namespace BloodSample.Core
             _playerCamera = Camera.main;
             if (_playerCamera == null)
             {
-                _playerCamera = FindObjectOfType<Camera>();
+                _playerCamera = FindFirstObjectByType<Camera>();
             }
         }
         

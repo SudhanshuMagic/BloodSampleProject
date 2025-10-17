@@ -29,7 +29,7 @@ namespace BloodSample.UI
         
         private void Start()
         {
-            _inputManager = FindObjectOfType<InputManager>();
+            _inputManager = FindFirstObjectByType<InputManager>();
             _gameManager = GameManager.Instance;
             
             SetupEventListeners();

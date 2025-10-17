@@ -19,7 +19,7 @@ namespace BloodSample.Core
             // But it's here as a failsafe just in case
             Debug.Log("🔄 [ZeroSetupBootstrap] Failsafe bootstrap running...");
             
-            if (FindObjectOfType<AutoSetupManager>() == null)
+            if (FindFirstObjectByType<AutoSetupManager>() == null)
             {
                 Debug.Log("🚨 [ZeroSetupBootstrap] No AutoSetupManager found - creating emergency setup!");
                 CreateEmergencySetup();

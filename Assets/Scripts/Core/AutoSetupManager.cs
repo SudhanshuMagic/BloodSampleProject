@@ -87,7 +87,7 @@ namespace BloodSample.Core
             }
             
             // Create InputManager if it doesn't exist
-            _inputManager = FindObjectOfType<InputManager>();
+            _inputManager = FindFirstObjectByType<InputManager>();
             if (_inputManager == null)
             {
                 GameObject imObj = new GameObject("InputManager");
@@ -106,7 +106,7 @@ namespace BloodSample.Core
             _mainCamera = Camera.main;
             if (_mainCamera == null)
             {
-                _mainCamera = FindObjectOfType<Camera>();
+                _mainCamera = FindFirstObjectByType<Camera>();
             }
             
             if (_mainCamera == null)
@@ -223,24 +223,24 @@ namespace BloodSample.Core
             col.radius = 0.15f;
             col.height = 1f;
             
-            BloodSample bloodSampleComponent = sampleObj.AddComponent<BloodSample>();
+            BloodSample.Systems.BloodSample bloodSampleComponent = sampleObj.AddComponent<BloodSample.Systems.BloodSample>();
             
             // Set up the blood sample component references
-            System.Reflection.FieldInfo liquidRendererField = typeof(BloodSample).GetField("_liquidRenderer", 
+            System.Reflection.FieldInfo liquidRendererField = typeof(BloodSample.Systems.BloodSample).GetField("_liquidRenderer", 
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             if (liquidRendererField != null)
             {
                 liquidRendererField.SetValue(bloodSampleComponent, liquid.GetComponent<Renderer>());
             }
             
-            System.Reflection.FieldInfo liquidLevelField = typeof(BloodSample).GetField("_liquidLevel", 
+            System.Reflection.FieldInfo liquidLevelField = typeof(BloodSample.Systems.BloodSample).GetField("_liquidLevel", 
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             if (liquidLevelField != null)
             {
                 liquidLevelField.SetValue(bloodSampleComponent, liquid.transform);
             }
             
-            System.Reflection.FieldInfo sampleMaterialsField = typeof(BloodSample).GetField("_sampleMaterials", 
+            System.Reflection.FieldInfo sampleMaterialsField = typeof(BloodSample.Systems.BloodSample).GetField("_sampleMaterials", 
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             if (sampleMaterialsField != null)
             {
@@ -440,7 +440,7 @@ namespace BloodSample.Core
             LogSetup("🖥️ Setting up user interface...");
             
             // Find or create UI Manager
-            _uiManager = FindObjectOfType<UIManager>();
+            _uiManager = FindFirstObjectByType<UIManager>();
             if (_uiManager == null)
             {
                 GameObject uiObj = new GameObject("UIManager");
@@ -450,7 +450,7 @@ namespace BloodSample.Core
             }
             
             // Create basic canvas if none exists
-            Canvas canvas = FindObjectOfType<Canvas>();
+            Canvas canvas = FindFirstObjectByType<Canvas>();
             if (canvas == null)
             {
                 GameObject canvasObj = new GameObject("Canvas");
@@ -502,7 +502,7 @@ namespace BloodSample.Core
         
         private void RunSystemTest()
         {
-            SystemTester tester = FindObjectOfType<SystemTester>();
+            SystemTester tester = FindFirstObjectByType<SystemTester>();
             if (tester != null)
             {
                 LogSetup("🧪 Running system integration test...");
