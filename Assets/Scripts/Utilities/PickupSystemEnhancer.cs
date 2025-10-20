@@ -125,7 +125,7 @@ namespace BloodSample.Utilities
         [ContextMenu("Make All Blood Samples Extra Grabbable")]
         public void EnhanceBloodSamples()
         {
-            var samples = FindObjectsByType<BloodSample>(FindObjectsSortMode.None);
+            var samples = FindObjectsByType<BloodSample.Systems.BloodSample>(FindObjectsSortMode.None);
             
             foreach (var sample in samples)
             {
