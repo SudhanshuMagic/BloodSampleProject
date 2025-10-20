@@ -488,6 +488,12 @@ namespace BloodSample.Core
             
             _generatedObjects.Add(testerObj);
             
+            // Add pickup system enhancer
+            GameObject enhancerObj = new GameObject("PickupSystemEnhancer");
+            enhancerObj.transform.SetParent(transform);
+            PickupSystemEnhancer enhancer = enhancerObj.AddComponent<PickupSystemEnhancer>();
+            _generatedObjects.Add(enhancerObj);
+            
             yield return new WaitForSeconds(_setupDelay);
         }
         

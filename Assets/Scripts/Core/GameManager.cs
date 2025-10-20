@@ -21,6 +21,10 @@ namespace BloodSample.Core
             {
                 Instance = this;
                 DontDestroyOnLoad(gameObject);
+                
+                // Initialize UnityEvents to prevent null reference exceptions
+                if (OnGameStateChanged == null) OnGameStateChanged = new UnityEvent<GameState>();
+                
                 InitializeGame();
             }
             else

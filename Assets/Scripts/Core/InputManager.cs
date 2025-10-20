@@ -21,6 +21,14 @@ namespace BloodSample.Core
         public GameObject SelectedObject => _selectedObject;
         public bool HasSelection => _selectedObject != null;
         
+        private void Awake()
+        {
+            // Initialize UnityEvents to prevent null reference exceptions
+            if (OnPointerClick == null) OnPointerClick = new UnityEvent<Vector3>();
+            if (OnObjectSelected == null) OnObjectSelected = new UnityEvent<GameObject>();
+            if (OnObjectDeselected == null) OnObjectDeselected = new UnityEvent();
+        }
+        
         public void Initialize()
         {
             _playerCamera = Camera.main;
