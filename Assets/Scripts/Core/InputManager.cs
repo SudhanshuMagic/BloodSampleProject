@@ -51,6 +51,13 @@ namespace BloodSample.Core
         
         private void HandleMouseInput()
         {
+            // Ensure camera is available
+            if (_playerCamera == null)
+            {
+                _playerCamera = Camera.main ?? FindFirstObjectByType<Camera>();
+                if (_playerCamera == null) return; // No camera found, skip mouse input
+            }
+            
             if (Input.GetMouseButtonDown(0))
             {
                 Vector3 mousePosition = Input.mousePosition;
@@ -122,6 +129,13 @@ namespace BloodSample.Core
         
         public Vector3 GetMouseWorldPosition()
         {
+            // Ensure camera is available
+            if (_playerCamera == null)
+            {
+                _playerCamera = Camera.main ?? FindFirstObjectByType<Camera>();
+                if (_playerCamera == null) return Vector3.zero; // No camera found
+            }
+            
             Vector3 mousePosition = Input.mousePosition;
             Ray ray = _playerCamera.ScreenPointToRay(mousePosition);
             

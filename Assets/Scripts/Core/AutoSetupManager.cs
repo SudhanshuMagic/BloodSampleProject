@@ -494,7 +494,34 @@ namespace BloodSample.Core
             BloodSample.Utilities.PickupSystemEnhancer enhancer = enhancerObj.AddComponent<BloodSample.Utilities.PickupSystemEnhancer>();
             _generatedObjects.Add(enhancerObj);
             
+            // Add modern laboratory components
+            SetupModernLaboratoryEnvironment();
+            
             yield return new WaitForSeconds(_setupDelay);
+        }
+        
+        private void SetupModernLaboratoryEnvironment()
+        {
+            LogSetup("🏥 Setting up modern laboratory environment...");
+            
+            // Create modern laboratory equipment generator
+            GameObject equipmentGeneratorObj = new GameObject("ModernLabEquipmentGenerator");
+            equipmentGeneratorObj.transform.SetParent(transform);
+            BloodSample.Utilities.ModernLabEquipmentGenerator equipmentGenerator = 
+                equipmentGeneratorObj.AddComponent<BloodSample.Utilities.ModernLabEquipmentGenerator>();
+            _generatedObjects.Add(equipmentGeneratorObj);
+            
+            // Generate complete modern laboratory
+            equipmentGenerator.GenerateCompleteModernLaboratory();
+            
+            // Create guidance system
+            GameObject guidanceSystemObj = new GameObject("GuidanceSystem");
+            guidanceSystemObj.transform.SetParent(transform);
+            BloodSample.Systems.GuidanceSystem guidanceSystem = 
+                guidanceSystemObj.AddComponent<BloodSample.Systems.GuidanceSystem>();
+            _generatedObjects.Add(guidanceSystemObj);
+            
+            LogSetup("✅ Modern laboratory environment setup complete!");
         }
         
         private void RunSystemTest()
