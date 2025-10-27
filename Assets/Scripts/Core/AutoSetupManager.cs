@@ -521,7 +521,21 @@ namespace BloodSample.Core
                 guidanceSystemObj.AddComponent<BloodSample.Systems.GuidanceSystem>();
             _generatedObjects.Add(guidanceSystemObj);
             
-            LogSetup("✅ Modern laboratory environment setup complete!");
+            // Create laboratory layout optimizer to ensure clear visibility
+            GameObject layoutOptimizerObj = new GameObject("LaboratoryLayoutOptimizer");
+            layoutOptimizerObj.transform.SetParent(transform);
+            BloodSample.Utilities.LaboratoryLayoutOptimizer layoutOptimizer = 
+                layoutOptimizerObj.AddComponent<BloodSample.Utilities.LaboratoryLayoutOptimizer>();
+            _generatedObjects.Add(layoutOptimizerObj);
+            
+            // Create wall remover for immediate central wall removal
+            GameObject wallRemoverObj = new GameObject("WallRemover");
+            wallRemoverObj.transform.SetParent(transform);
+            BloodSample.Utilities.WallRemover wallRemover = 
+                wallRemoverObj.AddComponent<BloodSample.Utilities.WallRemover>();
+            _generatedObjects.Add(wallRemoverObj);
+            
+            LogSetup("✅ Modern laboratory environment with optimized visibility setup complete!");
         }
         
         private void RunSystemTest()

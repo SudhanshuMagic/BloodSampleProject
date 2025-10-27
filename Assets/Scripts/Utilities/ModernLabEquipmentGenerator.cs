@@ -60,19 +60,21 @@ namespace BloodSample.Utilities
         /// </summary>
         private void CreateLaboratoryInfrastructure()
         {
-            // Create floor
+            // Create larger floor for open laboratory
             GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Plane);
             floor.name = "LabFloor";
-            floor.transform.localScale = new Vector3(5f, 1f, 5f);
+            floor.transform.localScale = new Vector3(8f, 1f, 8f);
             floor.transform.position = Vector3.zero;
             floor.GetComponent<Renderer>().material = _materialGenerator.CreateLabFloorMaterial();
             SetParent(floor);
             
-            // Create walls
-            CreateWall("WallNorth", new Vector3(0, 2.5f, 25f), new Vector3(50f, 5f, 1f));
-            CreateWall("WallSouth", new Vector3(0, 2.5f, -25f), new Vector3(50f, 5f, 1f));
-            CreateWall("WallEast", new Vector3(25f, 2.5f, 0), new Vector3(1f, 5f, 50f));
-            CreateWall("WallWest", new Vector3(-25f, 2.5f, 0), new Vector3(1f, 5f, 50f));
+            // Create minimal perimeter walls for completely open laboratory
+            CreateWall("WallNorth", new Vector3(0, 2.5f, 35f), new Vector3(70f, 5f, 1f));
+            CreateWall("WallSouth", new Vector3(0, 2.5f, -35f), new Vector3(70f, 5f, 1f));
+            CreateWall("WallEast", new Vector3(35f, 2.5f, 0), new Vector3(1f, 5f, 70f));
+            CreateWall("WallWest", new Vector3(-35f, 2.5f, 0), new Vector3(1f, 5f, 70f));
+            
+            Debug.Log("[ModernLabEquipmentGenerator] Created completely open laboratory - walls moved to perimeter");
             
             // Create modern lighting
             CreateModernLighting();
