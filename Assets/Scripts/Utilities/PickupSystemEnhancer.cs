@@ -40,6 +40,9 @@ namespace BloodSample.Utilities
             
             foreach (var obj in interactables)
             {
+                // Skip if object is null or destroyed
+                if (obj == null) continue;
+                
                 // Skip if already grabbable
                 if (obj is GrabbableObject) continue;
                 
@@ -61,7 +64,15 @@ namespace BloodSample.Utilities
                 if (ConvertToGrabbable(obj))
                 {
                     enhanced++;
-                    Debug.Log($"[PickupEnhancer] ✅ Enhanced {obj.name} for pickup");
+                    // Check if object still exists before accessing its name
+                    if (obj != null)
+                    {
+                        Debug.Log($"[PickupEnhancer] ✅ Enhanced {obj.name} for pickup");
+                    }
+                    else
+                    {
+                        Debug.Log($"[PickupEnhancer] ✅ Enhanced object for pickup (object reference lost)");
+                    }
                 }
             }
             

@@ -32,6 +32,19 @@ namespace BloodSample.Utilities
         {
             Debug.Log("[ModernLabEquipmentGenerator] 🏥 Creating complete modern laboratory...");
             
+            // Ensure material generator is initialized
+            if (_materialGenerator == null)
+            {
+                _materialGenerator = ModernLabMaterialGenerator.Instance;
+                Debug.Log("[ModernLabEquipmentGenerator] Material generator initialized");
+            }
+            
+            if (_materialGenerator == null)
+            {
+                Debug.LogError("[ModernLabEquipmentGenerator] Failed to initialize material generator!");
+                return;
+            }
+            
             CreateLaboratoryInfrastructure();
             CreateSafetyEquipment();
             CreateProcessingEquipment();
@@ -195,8 +208,20 @@ namespace BloodSample.Utilities
             switchObj.AddComponent<Rigidbody>().isKinematic = true;
             var lightSwitch = switchObj.AddComponent<LightSwitch>();
             
+            // Set up materials for the light switch
+            var onMaterial = _materialGenerator.CreateSafetyGreenMaterial();
+            var offMaterial = _materialGenerator.CreateWarningOrangeMaterial();
+            lightSwitch.SetSwitchMaterials(onMaterial, offMaterial);
+            
             // Find all lights to control
             var allLights = FindObjectsByType<Light>(FindObjectsSortMode.None);
+            
+            // Assign lights to the light switch
+            if (allLights.Length > 0)
+            {
+                lightSwitch.SetControlledLights(allLights);
+                Debug.Log($"[ModernLabEquipmentGenerator] Assigned {allLights.Length} lights to light switch");
+            }
             
             SetParent(switchObj);
         }

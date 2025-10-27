@@ -174,6 +174,12 @@ namespace BloodSample.Systems
         
         private void UpdateLightStatus()
         {
+            // Check if _controlledLights is initialized
+            if (_controlledLights == null || _controlledLights.Length == 0)
+            {
+                return; // Skip if no lights are assigned yet
+            }
+            
             foreach (var light in _controlledLights)
             {
                 if (light != null)
@@ -185,8 +191,31 @@ namespace BloodSample.Systems
             var renderer = GetComponent<Renderer>();
             if (renderer != null)
             {
-                renderer.material = _lightsOn ? _onMaterial : _offMaterial;
+                // Only update material if both materials are assigned
+                if (_onMaterial != null && _offMaterial != null)
+                {
+                    renderer.material = _lightsOn ? _onMaterial : _offMaterial;
+                }
             }
+        }
+        
+        /// <summary>
+        /// Set the lights that this switch will control
+        /// </summary>
+        public void SetControlledLights(Light[] lights)
+        {
+            _controlledLights = lights;
+            UpdateLightStatus(); // Update the lights immediately
+        }
+        
+        /// <summary>
+        /// Set the materials for on/off states
+        /// </summary>
+        public void SetSwitchMaterials(Material onMaterial, Material offMaterial)
+        {
+            _onMaterial = onMaterial;
+            _offMaterial = offMaterial;
+            UpdateLightStatus(); // Update the switch appearance immediately
         }
     }
 
