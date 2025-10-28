@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using BloodSample.Core;
 
 namespace BloodSample.Systems
@@ -12,8 +13,9 @@ namespace BloodSample.Systems
     {
         [Header("Guidance Settings")]
         [SerializeField] private bool _enableGuidance = true;
+        [SerializeField] private bool _showVisualMarkers = false;
         [SerializeField] private float _markerGlowSpeed = 2f;
-        [SerializeField] private float _markerScale = 1.5f;
+        [SerializeField] private float _markerScale = 0.3f;
         
         [Header("Marker Materials")]
         [SerializeField] private Material _guidanceMarkerMaterial;
@@ -96,13 +98,16 @@ namespace BloodSample.Systems
             var workstation = FindFirstObjectByType<Workstation>();
             if (workstation != null)
             {
-                CreateGuidanceMarker("workstation_marker", workstation.transform, "Click to proceed with workstation");
+                if (_enableGuidance && _showVisualMarkers)
+                {
+                    CreateGuidanceMarker("workstation_marker", workstation.transform, "Click to proceed with workstation");
+                }
             }
         }
         
-        public void CreateGuidanceMarker(string markerId, Transform target, string message)
+        public void CreateGuidanceMarker(string markerId, Transform target, string description)
         {
-            if (!_enableGuidance) return;
+            if (!_enableGuidance || !_showVisualMarkers) return;
             
             // Remove existing marker if it exists
             RemoveGuidanceMarker(markerId);
@@ -129,11 +134,11 @@ namespace BloodSample.Systems
             
             // Add interaction detection
             var markerInteraction = marker.AddComponent<GuidanceMarkerInteraction>();
-            markerInteraction.Initialize(markerId, message, this);
+            markerInteraction.Initialize(markerId, description, this);
             
             _activeMarkers[markerId] = marker;
             
-            Debug.Log($"🔆 Guidance marker created: {message}");
+            Debug.Log($"🔆 Guidance marker created: {description}");
         }
         
         public void RemoveGuidanceMarker(string markerId)
@@ -146,6 +151,33 @@ namespace BloodSample.Systems
                 }
                 _activeMarkers.Remove(markerId);
             }
+            
+            Debug.Log($"[GuidanceSystem] Removed guidance marker: {markerId}");
+        }
+        
+        /// <summary>
+        /// Remove all guidance markers from the scene
+        /// </summary>
+        [ContextMenu("Remove All Guidance Markers")]
+        public void RemoveAllGuidanceMarkers()
+        {
+            // Remove tracked markers
+            foreach (string markerId in _activeMarkers.Keys.ToArray())
+            {
+                RemoveGuidanceMarker(markerId);
+            }
+            
+            // Also find and remove any orphaned guidance markers
+            GameObject[] allMarkers = GameObject.FindObjectsOfType<GameObject>()
+                .Where(go => go.name.Contains("GuidanceMarker_")).ToArray();
+                
+            foreach (GameObject marker in allMarkers)
+            {
+                Debug.Log($"[GuidanceSystem] Removing orphaned marker: {marker.name}");
+                Destroy(marker);
+            }
+            
+            Debug.Log("[GuidanceSystem] All guidance markers removed");
         }
         
         public void OnMarkerInteracted(string markerId)
