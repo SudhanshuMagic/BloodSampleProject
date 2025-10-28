@@ -110,13 +110,25 @@ namespace BloodSample.Utilities
                 leg.GetComponent<Renderer>().material = _materialGenerator.CreateStainlessSteelMaterial();
             }
             
-            // Create sample slots
+            // Create sample slots with visual indicators
             Transform[] sampleSlots = new Transform[3];
             for (int i = 0; i < 3; i++)
             {
                 GameObject slot = new GameObject($"SampleSlot_{i + 1}");
                 slot.transform.SetParent(table.transform);
                 slot.transform.localPosition = new Vector3(-0.3f + (i * 0.3f), 0.5f, 0f);
+                
+                // Add visual slot indicator
+                GameObject slotIndicator = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                slotIndicator.name = $"SlotIndicator_{i + 1}";
+                slotIndicator.transform.SetParent(slot.transform);
+                slotIndicator.transform.localPosition = Vector3.zero;
+                slotIndicator.transform.localScale = new Vector3(0.2f, 0.02f, 0.2f);
+                slotIndicator.GetComponent<Renderer>().material = _materialGenerator.CreateMedicalBlueMaterial();
+                
+                // Remove collider from indicator (visual only)
+                Destroy(slotIndicator.GetComponent<Collider>());
+                
                 sampleSlots[i] = slot.transform;
             }
             
@@ -305,9 +317,19 @@ namespace BloodSample.Utilities
             liquid.transform.localScale = new Vector3(0.8f, 0.6f, 0.8f);
             liquid.GetComponent<Renderer>().material = _materialGenerator.CreateWarningOrangeMaterial(); // Red-ish for blood
             
-            // Add sample functionality
-            sampleTube.AddComponent<Rigidbody>();
+            // Add sample functionality with proper physics
+            Rigidbody rb = sampleTube.AddComponent<Rigidbody>();
+            rb.mass = 0.5f; // Light enough to grab easily
+            rb.drag = 2f; // Some air resistance for realistic movement
+            rb.angularDrag = 3f; // Prevent excessive spinning
+            
             var sampleComponent = sampleTube.AddComponent<BloodSample.Systems.BloodSample>();
+            
+            // Make it grabbable by adding GrabbableObject component
+            var grabbable = sampleTube.AddComponent<BloodSample.Core.GrabbableObject>();
+            
+            // Add a slight upward force to make it sit nicely in the rack
+            rb.useGravity = true;
             
             sampleTube.transform.SetParent(transform);
         }

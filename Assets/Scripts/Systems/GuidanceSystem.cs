@@ -92,7 +92,11 @@ namespace BloodSample.Systems
             
             Debug.Log("📍 GUIDANCE: Moving to Workstation");
             Debug.Log("When ready, move towards the workstation.");
-            Debug.Log("Look for the glowing marker to guide you.");
+            Debug.Log("🧪 BLOOD SAMPLE HANDLING:");
+            Debug.Log("• Right-click + drag blood samples from the rack");
+            Debug.Log("• Drop samples near the blue circular slots on the workstation");
+            Debug.Log("• Samples will automatically snap into position");
+            Debug.Log("• Press E on workstation to manually process, or wait for auto-processing");
             
             // Find the first workstation
             var workstation = FindFirstObjectByType<Workstation>();
