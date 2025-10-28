@@ -535,7 +535,14 @@ namespace BloodSample.Core
                 wallRemoverObj.AddComponent<BloodSample.Utilities.WallRemover>();
             _generatedObjects.Add(wallRemoverObj);
             
-            LogSetup("✅ Modern laboratory environment with optimized visibility setup complete!");
+            // Create instruction board system
+            GameObject instructionBoardGeneratorObj = new GameObject("InstructionBoardGenerator");
+            instructionBoardGeneratorObj.transform.SetParent(transform);
+            BloodSample.Utilities.InstructionBoardGenerator instructionBoardGenerator = 
+                instructionBoardGeneratorObj.AddComponent<BloodSample.Utilities.InstructionBoardGenerator>();
+            _generatedObjects.Add(instructionBoardGeneratorObj);
+            
+            LogSetup("✅ Modern laboratory with instruction boards and optimized visibility setup complete!");
         }
         
         private void RunSystemTest()

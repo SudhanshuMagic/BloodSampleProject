@@ -74,6 +74,7 @@ namespace BloodSample.Systems
             Debug.Log("• Modern workstations for processing");
             Debug.Log("• Walk-in freezer for preservation");
             Debug.Log("• Computer systems for data management");
+            Debug.Log("• Instruction boards for proper procedures");
             Debug.Log("");
             Debug.Log("🎮 Controls:");
             Debug.Log("• WASD - Move around the laboratory");
@@ -218,8 +219,15 @@ namespace BloodSample.Systems
                 CreateGuidanceMarker("scanner_marker", scanner.transform, "Barcode Scanner - Sample Identification");
             }
             
+            var instructionBoard = FindFirstObjectByType<InstructionBoard>();
+            if (instructionBoard != null)
+            {
+                CreateGuidanceMarker("instructions_marker", instructionBoard.transform, "Instruction Board - Blood Handling Procedures");
+            }
+            
             Debug.Log("🔆 Multiple guidance markers created for equipment tour");
             Debug.Log("Click on any glowing marker to learn about that equipment");
+            Debug.Log("📋 Don't forget to check the instruction boards for proper procedures!");
         }
         
         private void OnEquipmentTourStarted()
