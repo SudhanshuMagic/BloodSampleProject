@@ -42,7 +42,8 @@ namespace BloodSample.Utilities
             CreateSingleWorkstation();
             CreateInstructionalComputerMonitor();
             CreateWalkInFreezer();
-            CreateLightFixtures();
+            // Light fixtures removed - they were not looking good
+            // CreateLightFixtures();
             CreateBloodSampleRack();
             CreateBarcodeScanner();
             
@@ -232,7 +233,9 @@ namespace BloodSample.Utilities
         
         /// <summary>
         /// Create light fixtures for laboratory illumination
+        /// REMOVED - Light fixtures were not looking good in the scene
         /// </summary>
+        /*
         private void CreateLightFixtures()
         {
             // Create 3 overhead light fixtures
@@ -249,7 +252,9 @@ namespace BloodSample.Utilities
             
             Debug.Log($"[SimplifiedLabGenerator] Created {lightPositions.Length} light fixtures");
         }
+        */
         
+        /*
         private void CreateLightFixture(string name, Vector3 position)
         {
             // Create fixture housing
@@ -273,6 +278,7 @@ namespace BloodSample.Utilities
             
             fixture.transform.SetParent(transform);
         }
+        */
         
         /// <summary>
         /// Create blood sample rack with samples
