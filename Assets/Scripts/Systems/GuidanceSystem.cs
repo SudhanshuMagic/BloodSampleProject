@@ -67,14 +67,12 @@ namespace BloodSample.Systems
         {
             Debug.Log("=== WELCOME TO THE SAMPLING LABORATORY ===");
             Debug.Log("🔬 Notice your surroundings:");
-            Debug.Log("• Sample racks with blood samples");
-            Debug.Log("• Barcode scanner for identification");
-            Debug.Log("• Labelling station for sample management");
-            Debug.Log("• Transport containers for storage");
-            Debug.Log("• Modern workstations for processing");
-            Debug.Log("• Walk-in freezer for preservation");
-            Debug.Log("• Computer systems for data management");
-            Debug.Log("• Instruction boards for proper procedures");
+            Debug.Log("• Blood sample rack with sample tubes");
+            Debug.Log("• Single workstation for processing");
+            Debug.Log("• Computer monitor with handling instructions");
+            Debug.Log("• Barcode scanner for sample identification");
+            Debug.Log("• Walk-in freezer for sample storage");
+            Debug.Log("• Light fixtures for proper illumination");
             Debug.Log("");
             Debug.Log("🎮 Controls:");
             Debug.Log("• WASD - Move around the laboratory");
@@ -219,15 +217,15 @@ namespace BloodSample.Systems
                 CreateGuidanceMarker("scanner_marker", scanner.transform, "Barcode Scanner - Sample Identification");
             }
             
-            var instructionBoard = FindFirstObjectByType<InstructionBoard>();
-            if (instructionBoard != null)
+            var monitor = GameObject.Find("InstructionalMonitor");
+            if (monitor != null)
             {
-                CreateGuidanceMarker("instructions_marker", instructionBoard.transform, "Instruction Board - Blood Handling Procedures");
+                CreateGuidanceMarker("monitor_marker", monitor.transform, "Computer Monitor - Blood Sample Handling Steps");
             }
             
             Debug.Log("🔆 Multiple guidance markers created for equipment tour");
             Debug.Log("Click on any glowing marker to learn about that equipment");
-            Debug.Log("📋 Don't forget to check the instruction boards for proper procedures!");
+            Debug.Log("📺 Check the instructional displays for detailed procedures!");
         }
         
         private void OnEquipmentTourStarted()

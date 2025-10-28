@@ -78,6 +78,9 @@ namespace BloodSample.Utilities
             
             // Create modern lighting
             CreateModernLighting();
+            
+            // Create instructional displays near workstations
+            CreateInstructionalDisplays();
         }
         
         private void CreateWall(string name, Vector3 position, Vector3 scale)
@@ -125,6 +128,72 @@ namespace BloodSample.Utilities
             lightComponent.shadows = LightShadows.Soft;
             
             return fixture;
+        }
+        
+        /// <summary>
+        /// Create instructional displays near workstations
+        /// </summary>
+        private void CreateInstructionalDisplays()
+        {
+            // Create displays at strategic positions near workstation areas
+            Vector3[] displayPositions = {
+                new Vector3(-6f, 1.5f, -4f),   // Near front-left workstation area
+                new Vector3(6f, 1.5f, -4f),    // Near front-right workstation area
+                new Vector3(0f, 1.5f, 8f),     // Central display for overall guidance
+                new Vector3(-10f, 1.5f, 0f)    // Near computer workstation
+            };
+            
+            InstructionalDisplay.DisplayContent[] displayContents = {
+                InstructionalDisplay.DisplayContent.BloodSampleHandling,
+                InstructionalDisplay.DisplayContent.WorkstationOperation,
+                InstructionalDisplay.DisplayContent.QualityControl,
+                InstructionalDisplay.DisplayContent.WorkstationOperation
+            };
+            
+            for (int i = 0; i < displayPositions.Length; i++)
+            {
+                CreateInstructionalDisplay(
+                    $"InstructionalDisplay_{i + 1}", 
+                    displayPositions[i], 
+                    displayContents[i]
+                );
+            }
+            
+            Debug.Log($"[ModernLabEquipmentGenerator] Created {displayPositions.Length} instructional displays");
+        }
+        
+        private void CreateInstructionalDisplay(string name, Vector3 position, InstructionalDisplay.DisplayContent content)
+        {
+            // Create display stand/mount
+            GameObject stand = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            stand.name = name + "_Stand";
+            stand.transform.position = position + new Vector3(0, -0.75f, 0);
+            stand.transform.localScale = new Vector3(0.3f, 0.75f, 0.3f);
+            stand.GetComponent<Renderer>().material = _materialGenerator.CreateStainlessSteelMaterial();
+            
+            // Create display screen
+            GameObject screen = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            screen.name = name;
+            screen.transform.position = position;
+            screen.transform.localScale = new Vector3(1.5f, 1f, 0.1f);
+            
+            // Set up display materials
+            var screenOnMaterial = _materialGenerator.CreateComputerScreenMaterial(true);
+            var screenOffMaterial = _materialGenerator.CreateComputerScreenMaterial(false);
+            screen.GetComponent<Renderer>().material = screenOnMaterial;
+            
+            // Add instructional display component
+            screen.AddComponent<Rigidbody>().isKinematic = true;
+            var displayComponent = screen.AddComponent<InstructionalDisplay>();
+            displayComponent.SetDisplayMaterials(screenOnMaterial, screenOffMaterial);
+            displayComponent.SetDisplayContent(content);
+            
+            // Parent to stand
+            screen.transform.SetParent(stand.transform);
+            
+            SetParent(stand);
+            
+            Debug.Log($"[ModernLabEquipmentGenerator] Created instructional display: {name} with {content} content");
         }
         
         /// <summary>

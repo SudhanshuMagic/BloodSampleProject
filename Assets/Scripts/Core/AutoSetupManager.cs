@@ -502,17 +502,17 @@ namespace BloodSample.Core
         
         private void SetupModernLaboratoryEnvironment()
         {
-            LogSetup("🏥 Setting up modern laboratory environment...");
+            LogSetup("🏥 Setting up simplified laboratory environment per storyboard...");
             
-            // Create modern laboratory equipment generator
-            GameObject equipmentGeneratorObj = new GameObject("ModernLabEquipmentGenerator");
-            equipmentGeneratorObj.transform.SetParent(transform);
-            BloodSample.Utilities.ModernLabEquipmentGenerator equipmentGenerator = 
-                equipmentGeneratorObj.AddComponent<BloodSample.Utilities.ModernLabEquipmentGenerator>();
-            _generatedObjects.Add(equipmentGeneratorObj);
+            // Create simplified laboratory generator
+            GameObject simplifiedLabObj = new GameObject("SimplifiedLabGenerator");
+            simplifiedLabObj.transform.SetParent(transform);
+            BloodSample.Utilities.SimplifiedLabGenerator simplifiedLab = 
+                simplifiedLabObj.AddComponent<BloodSample.Utilities.SimplifiedLabGenerator>();
+            _generatedObjects.Add(simplifiedLabObj);
             
-            // Generate complete modern laboratory
-            equipmentGenerator.GenerateCompleteModernLaboratory();
+            // Generate simplified laboratory with only essential equipment
+            simplifiedLab.GenerateSimplifiedLaboratory();
             
             // Create guidance system
             GameObject guidanceSystemObj = new GameObject("GuidanceSystem");
@@ -535,14 +535,7 @@ namespace BloodSample.Core
                 wallRemoverObj.AddComponent<BloodSample.Utilities.WallRemover>();
             _generatedObjects.Add(wallRemoverObj);
             
-            // Create instruction board system
-            GameObject instructionBoardGeneratorObj = new GameObject("InstructionBoardGenerator");
-            instructionBoardGeneratorObj.transform.SetParent(transform);
-            BloodSample.Utilities.InstructionBoardGenerator instructionBoardGenerator = 
-                instructionBoardGeneratorObj.AddComponent<BloodSample.Utilities.InstructionBoardGenerator>();
-            _generatedObjects.Add(instructionBoardGeneratorObj);
-            
-            LogSetup("✅ Modern laboratory with instruction boards and optimized visibility setup complete!");
+            LogSetup("✅ Modern laboratory environment with optimized visibility setup complete!");
         }
         
         private void RunSystemTest()
