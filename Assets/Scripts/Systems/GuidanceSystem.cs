@@ -78,10 +78,15 @@ namespace BloodSample.Systems
             Debug.Log("");
             Debug.Log("🎮 Controls:");
             Debug.Log("• WASD - Move around the laboratory");
-            Debug.Log("• Mouse Movement - Look around in all directions");
+            Debug.Log("• Mouse Movement - Full 360° look around (cursor locked)");
             Debug.Log("• Left-click - Select objects");
             Debug.Log("• Right-click + Drag - Move equipment with mouse");
             Debug.Log("• E - Interact with equipment");
+            Debug.Log("• Escape - Unlock cursor / Exit mouse look");
+            Debug.Log("• Tab - Next instruction step");
+            Debug.Log("• Shift+Tab - Previous instruction step");
+            Debug.Log("• G - Show/Hide instructions");
+            Debug.Log("• H - Repeat current instruction");
             Debug.Log("• F1 - Debug panel");
             Debug.Log("=====================================");
         }

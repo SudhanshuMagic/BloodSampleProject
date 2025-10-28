@@ -30,7 +30,8 @@ namespace BloodSample.Utilities
         /// </summary>
         public void GenerateSimplifiedLaboratory()
         {
-            Debug.Log("[SimplifiedLabGenerator] 🏥 Creating simplified laboratory per storyboard...");
+            // Clean up any existing containers first
+            RemoveUnwantedContainers();
             
             // Ensure material generator is initialized
             if (_materialGenerator == null)
@@ -46,6 +47,7 @@ namespace BloodSample.Utilities
             // CreateLightFixtures();
             CreateBloodSampleRack();
             CreateBarcodeScanner();
+            CreateInstructionPanel();
             
             Debug.Log("[SimplifiedLabGenerator] ✅ Simplified laboratory creation complete!");
         }
@@ -376,10 +378,56 @@ namespace BloodSample.Utilities
             Debug.Log("[SimplifiedLabGenerator] Barcode scanner created");
         }
         
+        /// <summary>
+        /// Create visible instruction system for blood sample handling procedures
+        /// </summary>
+        private void CreateInstructionPanel()
+        {
+            GameObject instructionSystemObj = new GameObject("VisibleInstructionSystem");
+            instructionSystemObj.transform.SetParent(transform);
+            
+            var instructionSystem = instructionSystemObj.AddComponent<VisibleInstructionSystem>();
+            
+            Debug.Log("[SimplifiedLabGenerator] Visible instruction system created");
+        }
+        
         [ContextMenu("Generate Simplified Laboratory")]
         public void GenerateSimplifiedLaboratoryMenu()
         {
             GenerateSimplifiedLaboratory();
+        }
+        
+        /// <summary>
+        /// Remove unwanted container objects from the scene
+        /// </summary>
+        private void RemoveUnwantedContainers()
+        {
+            // Find all GameObjects with "Container" or "Transport" in the name
+            GameObject[] allObjects = FindObjectsOfType<GameObject>();
+            int removedCount = 0;
+            
+            foreach (GameObject obj in allObjects)
+            {
+                if (obj.name.Contains("Container") || 
+                    obj.name.Contains("Transport") || 
+                    obj.name.Contains("BloodSample_Auto"))
+                {
+                    Debug.Log($"[SimplifiedLabGenerator] Removing unwanted container: {obj.name}");
+                    DestroyImmediate(obj);
+                    removedCount++;
+                }
+            }
+            
+            if (removedCount > 0)
+            {
+                Debug.Log($"[SimplifiedLabGenerator] Removed {removedCount} unwanted container objects");
+            }
+        }
+        
+        [ContextMenu("Remove Containers")]
+        public void RemoveContainersMenu()
+        {
+            RemoveUnwantedContainers();
         }
         
         [ContextMenu("Clear Laboratory")]

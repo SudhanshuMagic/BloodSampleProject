@@ -10,9 +10,10 @@ namespace BloodSample.Core
         [SerializeField] private float _maxInteractionDistance = 10f;
         
         [Header("Mouse Look Settings")]
-        [SerializeField] private float _mouseSensitivity = 2f;
-        [SerializeField] private float _maxLookAngle = 80f;
+        [SerializeField] private float _mouseSensitivity = 3f;
+        [SerializeField] private float _maxLookAngle = 90f;
         [SerializeField] private bool _invertMouseY = false;
+        [SerializeField] private bool _lockCursor = true;
         
         [Header("Equipment Dragging Settings")]
         [SerializeField] private float _dragDistance = 5f;
@@ -53,11 +54,46 @@ namespace BloodSample.Core
         
         public void Initialize()
         {
+            Debug.Log("[InputManager] Initializing input system...");
+            
+            // Try to find the player camera if not assigned
             _playerCamera = Camera.main;
             if (_playerCamera == null)
             {
                 _playerCamera = FindFirstObjectByType<Camera>();
             }
+            
+            if (_playerCamera != null)
+            {
+                Debug.Log($"[InputManager] Camera assigned: {_playerCamera.name}");
+            }
+            else
+            {
+                Debug.LogWarning("[InputManager] No camera found. Mouse look will not work.");
+            }
+            
+            // Initialize cursor state
+            if (_lockCursor && _isMouseLookEnabled)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
+            
+            // Initialize rotation tracking
+            if (_playerCamera != null)
+            {
+                _currentXRotation = _playerCamera.transform.localEulerAngles.x;
+                // Handle Unity's 0-360 angle representation
+                if (_currentXRotation > 180f)
+                {
+                    _currentXRotation -= 360f;
+                }
+            }
+        }
+        
+        private void Start()
+        {
+            Initialize();
         }
         
         private void Update()
@@ -77,22 +113,43 @@ namespace BloodSample.Core
         {
             if (!_isMouseLookEnabled || _playerCamera == null) return;
             
+            // Lock cursor for better mouse look experience
+            if (_lockCursor)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
+            
             // Get mouse movement
             float mouseX = Input.GetAxis("Mouse X") * _mouseSensitivity;
             float mouseY = Input.GetAxis("Mouse Y") * _mouseSensitivity;
             
             if (_invertMouseY) mouseY = -mouseY;
             
-            // Rotate camera horizontally (Y-axis rotation)
-            _playerCamera.transform.Rotate(Vector3.up * mouseX);
+            // Apply horizontal rotation (Y-axis) - unlimited 360 degree rotation
+            _playerCamera.transform.Rotate(Vector3.up * mouseX, Space.World);
             
-            // Rotate camera vertically (X-axis rotation with clamping)
+            // Apply vertical rotation (X-axis) with clamping
             _currentXRotation -= mouseY;
             _currentXRotation = Mathf.Clamp(_currentXRotation, -_maxLookAngle, _maxLookAngle);
             
-            // Apply vertical rotation to camera
-            Vector3 currentRotation = _playerCamera.transform.localEulerAngles;
-            _playerCamera.transform.localEulerAngles = new Vector3(_currentXRotation, currentRotation.y, currentRotation.z);
+            // Set the camera's local X rotation directly
+            Vector3 currentEuler = _playerCamera.transform.localEulerAngles;
+            _playerCamera.transform.localEulerAngles = new Vector3(_currentXRotation, currentEuler.y, 0f);
+            
+            // Allow escape key to unlock cursor
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+                _isMouseLookEnabled = false;
+            }
+            
+            // Click to re-enable mouse look after escape
+            if (Input.GetMouseButtonDown(0) && !_isMouseLookEnabled)
+            {
+                _isMouseLookEnabled = true;
+            }
         }
         
         private void HandleMouseInput()
@@ -305,6 +362,28 @@ namespace BloodSample.Core
         public void SetMouseSensitivity(float sensitivity)
         {
             _mouseSensitivity = Mathf.Clamp(sensitivity, 0.1f, 10f);
+            Debug.Log($"[InputManager] Mouse sensitivity set to: {_mouseSensitivity}");
+        }
+        
+        /// <summary>
+        /// Toggle cursor lock state
+        /// </summary>
+        public void ToggleCursorLock()
+        {
+            _lockCursor = !_lockCursor;
+            
+            if (_lockCursor && _isMouseLookEnabled)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+                Debug.Log("[InputManager] Cursor locked for mouse look");
+            }
+            else
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+                Debug.Log("[InputManager] Cursor unlocked");
+            }
         }
         
         /// <summary>

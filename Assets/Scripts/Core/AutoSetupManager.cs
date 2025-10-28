@@ -58,7 +58,7 @@ namespace BloodSample.Core
             yield return StartCoroutine(CreateMaterials());
             yield return StartCoroutine(CreatePrefabs());
             yield return StartCoroutine(BuildLaboratoryEnvironment());
-            yield return StartCoroutine(CreateInitialSamples());
+            // yield return StartCoroutine(CreateInitialSamples()); // Disabled - SimplifiedLabGenerator creates samples
             yield return StartCoroutine(SetupUI());
             yield return StartCoroutine(FinalizeSetup());
             
@@ -172,8 +172,8 @@ namespace BloodSample.Core
         
         private IEnumerator CreatePrefabs()
         {
-            LogSetup("🧪 Creating blood sample prefab...");
-            yield return StartCoroutine(CreateBloodSamplePrefab());
+            LogSetup("🧪 Skipping blood sample prefab creation (using simplified lab generator)...");
+            // yield return StartCoroutine(CreateBloodSamplePrefab()); // Disabled - containers not needed
             
             LogSetup("🔬 Creating workstation prefab...");
             yield return StartCoroutine(CreateWorkstationPrefab());
