@@ -307,7 +307,7 @@ namespace BloodSample.Utilities
             
             // Add sample functionality
             sampleTube.AddComponent<Rigidbody>();
-            var sampleComponent = sampleTube.AddComponent<BloodSample>();
+            var sampleComponent = sampleTube.AddComponent<BloodSample.Systems.BloodSample>();
             
             sampleTube.transform.SetParent(transform);
         }
