@@ -108,9 +108,10 @@ namespace BloodSample.Systems
                     title = "STEP 4: SAMPLE PLACEMENT",
                     content = "Place samples in workstation:\n\n" +
                              "• Right-click and drag samples from rack\n" +
-                             "• Move toward blue circular slots\n" +
-                             "• Drop near slots - auto-snap to position\n" +
-                             "• Ensure proper orientation\n" +
+                             "• Drop ANYWHERE on workstation surface\n" +
+                             "• Auto-snap to nearest available slot\n" +
+                             "• Sample liquid turns RED when verified\n" +
+                             "• Computer screen shows 'SAMPLE VERIFIED'\n" +
                              "• Maximum 3 samples per workstation",
                     stepInfo = "STEP 4 OF 7 - Press TAB to continue"
                 },

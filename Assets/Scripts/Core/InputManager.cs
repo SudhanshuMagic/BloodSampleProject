@@ -16,9 +16,10 @@ namespace BloodSample.Core
         [SerializeField] private bool _lockCursor = true;
         
         [Header("Equipment Dragging Settings")]
-        [SerializeField] private float _dragDistance = 5f;
+        [SerializeField] private float _dragDistance = 2f;
         [SerializeField] private LayerMask _draggableLayerMask = -1;
-        [SerializeField] private float _dragSmoothness = 10f;
+        [SerializeField] private float _dragSmoothness = 15f;
+        [SerializeField] private float _dragHeightOffset = 0.5f;
         
         [Header("Events")]
         public UnityEvent<Vector3> OnPointerClick;
@@ -226,8 +227,11 @@ namespace BloodSample.Core
                     _draggedRigidbody = rb;
                     _isDragging = true;
                     
-                    // Calculate offset from object center to hit point
-                    _dragOffset = _draggedObject.transform.position - hit.point;
+                    // Calculate a more intuitive offset for dragging
+                    Vector3 screenPoint = _playerCamera.WorldToScreenPoint(_draggedObject.transform.position);
+                    Vector3 currentMouseWorld = _playerCamera.ScreenToWorldPoint(new Vector3(
+                        Input.mousePosition.x, Input.mousePosition.y, screenPoint.z));
+                    _dragOffset = _draggedObject.transform.position - currentMouseWorld;
                     
                     // Disable mouse look while dragging
                     _isMouseLookEnabled = false;
@@ -247,14 +251,17 @@ namespace BloodSample.Core
         {
             Vector3 mousePosition = Input.mousePosition;
             
-            // Create a plane at the drag distance from camera
+            // Create a plane at the drag distance from camera with height offset
             Vector3 targetPosition = _playerCamera.ScreenToWorldPoint(new Vector3(
                 mousePosition.x, 
                 mousePosition.y, 
                 _dragDistance
             ));
             
-            // Apply offset and smooth movement
+            // Add height offset to keep object visible above surfaces
+            targetPosition += Vector3.up * _dragHeightOffset;
+            
+            // Apply offset and smooth movement with improved interpolation
             Vector3 newPosition = targetPosition + _dragOffset;
             _draggedObject.transform.position = Vector3.Lerp(
                 _draggedObject.transform.position, 
@@ -410,7 +417,17 @@ namespace BloodSample.Core
         /// </summary>
         public void SetDragDistance(float distance)
         {
-            _dragDistance = Mathf.Clamp(distance, 1f, 20f);
+            _dragDistance = Mathf.Clamp(distance, 0.5f, 10f);
+            Debug.Log($"[InputManager] Drag distance set to: {_dragDistance}");
+        }
+        
+        /// <summary>
+        /// Set the drag height offset
+        /// </summary>
+        public void SetDragHeightOffset(float heightOffset)
+        {
+            _dragHeightOffset = Mathf.Clamp(heightOffset, 0f, 2f);
+            Debug.Log($"[InputManager] Drag height offset set to: {_dragHeightOffset}");
         }
         
         /// <summary>

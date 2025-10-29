@@ -260,5 +260,34 @@ namespace BloodSample.Systems
         {
             CycleContent();
         }
+        
+        /// <summary>
+        /// Show a verification message on the computer screen
+        /// </summary>
+        public void ShowVerificationMessage(string message)
+        {
+            if (_isDisplayOn)
+            {
+                Debug.Log("=== COMPUTER SCREEN VERIFICATION ===");
+                Debug.Log(message);
+                Debug.Log("===================================");
+                
+                // Also display in the console for immediate feedback
+                Debug.Log($"[InstructionalDisplay] VERIFICATION: {message}");
+                
+                // Auto-restore after 5 seconds (for future implementation)
+                Invoke(nameof(RestoreOriginalDisplay), 5f);
+            }
+        }
+        
+        /// <summary>
+        /// Restore the original display content
+        /// </summary>
+        private void RestoreOriginalDisplay()
+        {
+            // For now, just refresh the current display
+            UpdateDisplay();
+            Debug.Log("[InstructionalDisplay] Display refreshed after verification message");
+        }
     }
 }

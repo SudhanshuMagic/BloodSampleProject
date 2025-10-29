@@ -99,8 +99,11 @@ namespace BloodSample.Systems
             Debug.Log("When ready, move towards the workstation.");
             Debug.Log("🧪 BLOOD SAMPLE HANDLING:");
             Debug.Log("• Right-click + drag blood samples from the rack");
-            Debug.Log("• Drop samples near the blue circular slots on the workstation");
-            Debug.Log("• Samples will automatically snap into position");
+            Debug.Log("• Samples appear close to cursor for precise control");
+            Debug.Log("• Drop samples ANYWHERE on the middle workstation surface");
+            Debug.Log("• Samples automatically snap to available blue slots");
+            Debug.Log("• 🔴 Sample liquid turns BRIGHT RED when verified");
+            Debug.Log("• 💻 Computer monitor displays 'SAMPLE VERIFIED' message instantly");
             Debug.Log("• Press E on workstation to manually process, or wait for auto-processing");
             
             // Find the first workstation

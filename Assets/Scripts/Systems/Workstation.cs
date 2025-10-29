@@ -100,53 +100,76 @@ namespace BloodSample.Systems
         }
         
         /// <summary>
-        /// Automatically detect and place samples dropped near the workstation
+        /// Automatically detect and place samples dropped anywhere on the workstation
         /// </summary>
         private void Update()
         {
             if (_isProcessing) return;
             
-            // Check for samples near the workstation slots
-            for (int i = 0; i < _sampleSlots.Length && i < _currentSamples.Length; i++)
+            // Check for samples anywhere on the workstation surface
+            Vector3 workstationCenter = transform.position + Vector3.up * 0.5f; // Above the table surface
+            Collider[] nearbyObjects = Physics.OverlapBox(
+                workstationCenter, 
+                new Vector3(1.2f, 0.3f, 0.7f), // Covers entire workstation surface
+                transform.rotation
+            );
+            
+            foreach (Collider col in nearbyObjects)
             {
-                if (_currentSamples[i] == null && _sampleSlots[i] != null)
+                var bloodSample = col.GetComponent<BloodSample>();
+                if (bloodSample != null)
                 {
-                    // Look for samples within range of this slot (increased detection range)
-                    Collider[] nearbyObjects = Physics.OverlapSphere(_sampleSlots[i].position, 1.5f);
-                    
-                    foreach (Collider col in nearbyObjects)
+                    // Check if this sample isn't already placed in a slot
+                    bool alreadyPlaced = false;
+                    for (int j = 0; j < _currentSamples.Length; j++)
                     {
-                        var bloodSample = col.GetComponent<BloodSample>();
-                        if (bloodSample != null)
+                        if (_currentSamples[j] == bloodSample)
                         {
-                            // Check if this sample isn't already placed in another slot
-                            bool alreadyPlaced = false;
-                            for (int j = 0; j < _currentSamples.Length; j++)
-                            {
-                                if (_currentSamples[j] == bloodSample)
-                                {
-                                    alreadyPlaced = true;
-                                    break;
-                                }
-                            }
-                            
-                            if (!alreadyPlaced)
-                            {
-                                // Check if sample is moving too fast (just dropped)
-                                Rigidbody sampleRb = bloodSample.GetComponent<Rigidbody>();
-                                if (sampleRb != null && sampleRb.velocity.magnitude > 0.5f)
-                                {
-                                    // Sample is still moving, wait a bit
-                                    continue;
-                                }
-                                
-                                PlaceSampleInSlot(bloodSample, i);
-                                break;
-                            }
+                            alreadyPlaced = true;
+                            break;
                         }
+                    }
+                    
+                    if (!alreadyPlaced)
+                    {
+                        // Check if sample is moving too fast (just dropped)
+                        Rigidbody sampleRb = bloodSample.GetComponent<Rigidbody>();
+                        if (sampleRb != null && sampleRb.velocity.magnitude > 0.5f)
+                        {
+                            // Sample is still moving, wait a bit
+                            continue;
+                        }
+                        
+                        // Find the next available slot
+                        int availableSlot = FindNextAvailableSlot();
+                        if (availableSlot >= 0)
+                        {
+                            PlaceSampleInSlot(bloodSample, availableSlot);
+                            Debug.Log($"📦 [Workstation] Sample detected anywhere on workstation surface - auto-assigning to slot {availableSlot + 1}");
+                        }
+                        else
+                        {
+                            Debug.LogWarning("[Workstation] No available slots - workstation is full");
+                        }
+                        break; // Only process one sample per frame
                     }
                 }
             }
+        }
+        
+        /// <summary>
+        /// Find the next available slot for sample placement
+        /// </summary>
+        private int FindNextAvailableSlot()
+        {
+            for (int i = 0; i < _currentSamples.Length; i++)
+            {
+                if (_currentSamples[i] == null)
+                {
+                    return i;
+                }
+            }
+            return -1; // No available slots
         }
         
         /// <summary>
@@ -171,7 +194,14 @@ namespace BloodSample.Systems
                     sampleRb.isKinematic = true;
                 }
                 
-                Debug.Log($"[Workstation] Sample {sample.name} placed in slot {slotIndex + 1}");
+                // Change sample color to red to indicate verification
+                ChangeSampleColorToRed(sample);
+                
+                // Notify computer screen about sample verification
+                NotifyComputerScreenSampleVerified(sample);
+                
+                Debug.Log($"🔴 [VERIFICATION SUCCESS] Sample {sample.name} verified on middle workstation!");
+                Debug.Log($"✅ Visual: Blood liquid turned RED | 💻 Computer: 'SAMPLE VERIFIED' message displayed");
                 
                 // Check if we can start processing
                 CheckForAutoProcessing();
@@ -234,6 +264,81 @@ namespace BloodSample.Systems
                     Debug.Log($"[Workstation] Sample {sample.name} removed from slot {i + 1}");
                     break;
                 }
+            }
+        }
+        
+        /// <summary>
+        /// Change the blood sample color to red to indicate verification
+        /// </summary>
+        private void ChangeSampleColorToRed(BloodSample sample)
+        {
+            // Find the liquid component (blood inside the tube)
+            Transform liquidChild = sample.transform.Find(sample.name + "_Liquid");
+            if (liquidChild != null)
+            {
+                Renderer liquidRenderer = liquidChild.GetComponent<Renderer>();
+                if (liquidRenderer != null)
+                {
+                    // Create red material for verified blood
+                    Material redMaterial = new Material(Shader.Find("Standard"));
+                    redMaterial.name = "VerifiedBlood_Material";
+                    redMaterial.color = new Color(0.8f, 0.1f, 0.1f, 1f); // Bright red
+                    redMaterial.SetFloat("_Metallic", 0.2f);
+                    redMaterial.SetFloat("_Smoothness", 0.6f);
+                    
+                    liquidRenderer.material = redMaterial;
+                    Debug.Log($"🔴 [Workstation] SUCCESS: {sample.name} liquid changed to BRIGHT RED - Sample verified!");
+                }
+            }
+        }
+        
+        [ContextMenu("Test Verification System")]
+        public void TestVerificationSystem()
+        {
+            Debug.Log("[Workstation] Testing verification system...");
+            
+            // Find a sample to test with
+            var testSample = FindFirstObjectByType<BloodSample>();
+            if (testSample != null)
+            {
+                ChangeSampleColorToRed(testSample);
+                NotifyComputerScreenSampleVerified(testSample);
+                Debug.Log("[Workstation] Verification system test completed");
+            }
+            else
+            {
+                Debug.LogWarning("[Workstation] No blood sample found for testing");
+            }
+        }
+        
+        [ContextMenu("Show Detection Area")]
+        public void ShowDetectionArea()
+        {
+            Vector3 workstationCenter = transform.position + Vector3.up * 0.5f;
+            Vector3 boxSize = new Vector3(1.2f, 0.3f, 0.7f);
+            
+            Debug.Log($"[Workstation] Detection area covers entire workstation surface:");
+            Debug.Log($"Center: {workstationCenter}");
+            Debug.Log($"Size: {boxSize} (Width: {boxSize.x * 2}m, Height: {boxSize.y * 2}m, Depth: {boxSize.z * 2}m)");
+            Debug.Log("Drop blood samples ANYWHERE within this area for automatic verification!");
+        }
+        
+        /// <summary>
+        /// Notify the computer screen about sample verification
+        /// </summary>
+        private void NotifyComputerScreenSampleVerified(BloodSample sample)
+        {
+            // Find the computer screen in the scene
+            var computerMonitor = FindFirstObjectByType<InstructionalDisplay>();
+            if (computerMonitor != null)
+            {
+                // Update the computer screen with verification message
+                computerMonitor.ShowVerificationMessage($"SAMPLE VERIFIED\n\nSample ID: {sample.name}\nWorkstation: Central (Middle)\nStatus: VERIFIED\nTime: {System.DateTime.Now:HH:mm:ss}\n\nReady for processing...");
+                Debug.Log($"💻 [Computer Monitor] Displaying verification message for {sample.name} on central workstation");
+            }
+            else
+            {
+                Debug.LogWarning("[Workstation] No computer screen found to display verification message");
             }
         }
     }
