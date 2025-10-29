@@ -111,8 +111,8 @@ namespace BloodSample.Systems
             {
                 if (_currentSamples[i] == null && _sampleSlots[i] != null)
                 {
-                    // Look for samples within range of this slot
-                    Collider[] nearbyObjects = Physics.OverlapSphere(_sampleSlots[i].position, 1f);
+                    // Look for samples within range of this slot (increased detection range)
+                    Collider[] nearbyObjects = Physics.OverlapSphere(_sampleSlots[i].position, 1.5f);
                     
                     foreach (Collider col in nearbyObjects)
                     {
@@ -132,6 +132,14 @@ namespace BloodSample.Systems
                             
                             if (!alreadyPlaced)
                             {
+                                // Check if sample is moving too fast (just dropped)
+                                Rigidbody sampleRb = bloodSample.GetComponent<Rigidbody>();
+                                if (sampleRb != null && sampleRb.velocity.magnitude > 0.5f)
+                                {
+                                    // Sample is still moving, wait a bit
+                                    continue;
+                                }
+                                
                                 PlaceSampleInSlot(bloodSample, i);
                                 break;
                             }
@@ -150,14 +158,16 @@ namespace BloodSample.Systems
             {
                 _currentSamples[slotIndex] = sample;
                 
-                // Snap the sample to the slot position
-                sample.transform.position = _sampleSlots[slotIndex].position;
+                // Snap the sample to the slot position with slight adjustment for visibility
+                sample.transform.position = _sampleSlots[slotIndex].position + Vector3.up * 0.1f;
                 sample.transform.rotation = _sampleSlots[slotIndex].rotation;
                 
-                // Make it kinematic so it stays in place
+                // Make it kinematic so it stays in place and reset velocities
                 Rigidbody sampleRb = sample.GetComponent<Rigidbody>();
                 if (sampleRb != null)
                 {
+                    sampleRb.velocity = Vector3.zero;
+                    sampleRb.angularVelocity = Vector3.zero;
                     sampleRb.isKinematic = true;
                 }
                 

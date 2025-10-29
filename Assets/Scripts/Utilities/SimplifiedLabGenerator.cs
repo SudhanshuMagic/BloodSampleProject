@@ -325,11 +325,12 @@ namespace BloodSample.Utilities
             liquid.transform.localScale = new Vector3(0.8f, 0.6f, 0.8f);
             liquid.GetComponent<Renderer>().material = _materialGenerator.CreateWarningOrangeMaterial(); // Red-ish for blood
             
-            // Add sample functionality with proper physics
+            // Add sample functionality with improved physics for workstation placement
             Rigidbody rb = sampleTube.AddComponent<Rigidbody>();
-            rb.mass = 0.5f; // Light enough to grab easily
-            rb.drag = 2f; // Some air resistance for realistic movement
-            rb.angularDrag = 3f; // Prevent excessive spinning
+            rb.mass = 0.3f; // Lighter for easier handling
+            rb.drag = 5f; // Higher drag for better control and settling
+            rb.angularDrag = 8f; // Prevent excessive spinning and rotation
+            rb.interpolation = RigidbodyInterpolation.Interpolate; // Smooth movement
             
             var sampleComponent = sampleTube.AddComponent<BloodSample.Systems.BloodSample>();
             

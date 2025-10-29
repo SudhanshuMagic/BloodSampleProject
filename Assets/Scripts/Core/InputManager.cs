@@ -267,13 +267,21 @@ namespace BloodSample.Core
         {
             if (_draggedObject != null)
             {
-                // Re-enable physics if object had Rigidbody
+                // Reset physics forces and enable proper drop behavior
                 if (_draggedRigidbody != null)
                 {
+                    // Stop any accumulated velocity to prevent flying away
+                    _draggedRigidbody.velocity = Vector3.zero;
+                    _draggedRigidbody.angularVelocity = Vector3.zero;
+                    
+                    // Re-enable physics with gentle settling
                     _draggedRigidbody.isKinematic = false;
+                    
+                    // Add slight downward velocity for natural drop
+                    _draggedRigidbody.velocity = new Vector3(0, -2f, 0);
                 }
                 
-                Debug.Log($"[InputManager] Stopped dragging: {_draggedObject.name}");
+                Debug.Log($"[InputManager] Stopped dragging: {_draggedObject.name} - Ready for workstation detection");
             }
             
             _draggedObject = null;
